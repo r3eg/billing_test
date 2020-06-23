@@ -24,13 +24,15 @@ func initPublisher(amqpURI, exchange, exchangeType string, isInit chan string) e
 	log.Printf("dialing %q", amqpURI)
 	var connection *amqp.Connection
 	var err error
-	for err != nil {
+	isConnected := false
+	for !isConnected {
 		connection, err = amqp.Dial(amqpURI)
 		if err != nil {
 			logrus.Error("error connect to amqp: ", err)
 			logrus.Warn("try reconnect after 15 seconds")
 			time.Sleep(time.Second * 15)
 		}
+		isConnected = true
 	}
 	defer connection.Close()
 
