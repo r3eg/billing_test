@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -13,10 +12,6 @@ import (
 var channel *amqp.Channel
 
 func initPublisher(amqpURI, exchange, exchangeType string, isInit chan string) error {
-	amqpHost := os.Getenv("AMQP_HOST")
-	if amqpHost == "" {
-		amqpHost = "localhost"
-	}
 	// This function dials, connects, declares, publishes, and tears down,
 	// all in one go. In a real service, you probably want to maintain a
 	// long-lived connection as state, and publish against that.
@@ -31,8 +26,9 @@ func initPublisher(amqpURI, exchange, exchangeType string, isInit chan string) e
 			logrus.Error("error connect to amqp: ", err)
 			logrus.Warn("try reconnect after 15 seconds")
 			time.Sleep(time.Second * 15)
+		} else {
+			isConnected = true
 		}
-		isConnected = true
 	}
 	defer connection.Close()
 
